@@ -72,7 +72,7 @@ def listofusers():
 def linkforapi():
 	s1 = "https://maps.googleapis.com/maps/api/staticmap?center="
 	s2 = str(str(latitude) +','+ str(longitude))
-	key = "AIzaSyAo-LWsAu7E-EsYXIcrajjfESZO9nuXYv4"
+	key = "key"
 #!------------------------------------------------------------------------------------------------
 
 @app.route("/")
