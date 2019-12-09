@@ -1,32 +1,98 @@
-{% extends "layout.html" %}
 
+
+{% if current_user.is_authenticated %}
+
+{% extends "layout.html" %}
 {% block content %}
 
-<br><br><br><br><br><br><br>
-<button onclick="getLocation()">Get Location</button>
+{% for user in s %}
 
-<p id="demo"></p>
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ user.username }}</a>
+      <small class="text-muted">{{ user.school }}</small>
+    </div>
+    <h2>{{ user.username }}</h2>
+    <p class="article-content">{{ user.gps }}</p>
+  </div>
+</article>
 
-<script>
-var x = document.getElementById("demo");
+{% endfor %}
 
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition);
-  } else { 
-    x.innerHTML = "Geolocation is not supported by this browser.";
-  }
-}
+{% for user in c %}
 
-function showPosition(position) {
-  x.innerHTML = "Latitude: " + position.coords.latitude + 
-  "<br>Longitude: " + position.coords.longitude;
-}
-</script>
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ user.username }}</a>
+      <small class="text-muted">{{ user.college }}</small>
+    </div>
+    <h2>{{ user.username }}</h2>
+    <p class="article-content">{{ user.gps }}</p>
+  </div>
+</article>
 
+{% endfor %}
 
-	<!-- {% for post in posts %}
-		<h1> {{post.gps}} </h1>
-	{% endfor %}
- -->
+{% for user in c1 %}
+
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ user.username }}</a>
+      <small class="text-muted">{{ user.company1 }}</small>
+    </div>
+    <h2>{{ user.username }}</h2>
+    <p class="article-content">{{ user.gps }}</p>
+  </div>
+</article>
+
+{% endfor %}
+
+{% for user in c2 %}
+
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ user.username }}</a>
+      <small class="text-muted">{{ user.company2 }}</small>
+    </div>
+    <h2>{{ user.username }}</h2>
+    <p class="article-content">{{ user.gps }}</p>
+  </div>
+</article>
+
+{% endfor %}
+
 {% endblock content%}
+
+{% else %}
+
+
+
+<!-- ###################################################################################################### -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello There!</title>
+</head>
+<style type="text/css">
+  html,body {
+  background-image: linear-gradient(-90deg, #2193b0, #6dd5ed);
+}
+</style>
+<body>
+  <div id="grad">
+  <font face = "Candara" size = "4">  NewBie? Register<a href="{{ url_for('register') }}"> here</a> 
+<br><br>
+<font face = "Candara" size = "4">  Oldie? Login <a href="{{ url_for('login') }}">here</a> 
+  </div>
+</body>
+</html>
+
+
+
+{% endif %}
+
