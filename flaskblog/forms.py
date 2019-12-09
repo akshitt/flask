@@ -6,6 +6,7 @@ from flaskblog.models import User
 
 class RegistrationForm(FlaskForm):
 	username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
+	# name = StringField('Name', validators=[DataRequired(), Length(min=3, max=50)])
 	email = StringField('Email', validators=[DataRequired(),Email()])
 	college = StringField('College')
 	school = StringField('School', validators=[Length(min=5, max=50)])
@@ -24,9 +25,9 @@ class RegistrationForm(FlaskForm):
 	def validate_email(self, email):
 		email = User.query.filter_by(email = email.data).first()
 		if email :
-			raise ValidationError('Email Already Exists')
+			raise ValidationError('Email already taken')
 	
-	
+
 #!------------------------------------------------------------------
 
 class LoginForm(FlaskForm):
