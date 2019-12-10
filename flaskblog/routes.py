@@ -68,18 +68,17 @@ def listofusers():
 
 	return(s,c,c1,c2)
 #!------------------------------------------------------------------------------------------------
-
-def linkforapi():
-	s1 = "https://maps.googleapis.com/maps/api/staticmap?center="
-	s2 = str(str(latitude) +','+ str(longitude))
-	key = "key"
+def net_list():
+	s,c,c1,c2 = listofusers()
+	return(s+c+c1+c2)
 #!------------------------------------------------------------------------------------------------
 
 @app.route("/")
 @app.route("/home")
 def home():
 	s,c,c1,c2 = listofusers()
-	return render_template('home.html', title= 'Home', s=s, c=c, c1=c1, c2=c2)
+	total = net_list()
+	return render_template('home.html', title= 'Home', s=s, c=c, c1=c1, c2=c2, total=total)
 #!------------------------------------------------------------------------------------------------
 
 @app.route("/about")
@@ -117,8 +116,9 @@ def login():
 		user = User.query.filter_by(username = form.username.data).first()
 		
 		if user and bcrypt.check_password_hash(user.password, form.password.data):
-			user.gps = location	
 			login_user(user,remember = form.remember.data)
+			current_user.gps = location	
+			db.session.commit()
 			flash('Login successful','success')
 			return redirect(url_for('home'))
 		else:
