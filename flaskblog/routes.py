@@ -1,9 +1,12 @@
 from flask import Flask, render_template, url_for, flash, redirect, request
 from flaskblog.models import User
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm
-from flaskblog import app, db, bcrypt
+from flaskblog import app, db, bcrypt, socketio
 from flask_login import login_user, current_user, logout_user, login_required
 from math import radians, cos, sin, asin, sqrt
+import geocoder
+from flask_socketio import SocketIO
+
 #!-----------------------------------------------------------------------------------------------------
 
 def dist(lat1, lon1, lat2, lon2):
@@ -22,12 +25,15 @@ def dist(lat1, lon1, lat2, lon2):
     r = 6371 # Radius of earth in kilometers. Use 3956 for miles
     return c * r
 #!-------------------------------------------------------------------------------------------------------
-import geocoder
-g = geocoder.ip('me')
-latitude = g.latlng[0]
-longitude = g.latlng[1]
-location = str(str(latitude) + str(longitude))
+def get_coordinates():
+	g = geocoder.ip('me')
+	latitude = g.latlng[0]
+	longitude = g.latlng[1]
+	location = str(str(latitude) + str(longitude))
+	return(location)
 #!------------------------------------------------------------------
+	
+
 
 def listofusers():
 	users = User.query.all()
@@ -78,7 +84,7 @@ def net_list():
 def home():
 	s,c,c1,c2 = listofusers()
 	total = net_list()
-	return render_template('home.html', title= 'Home', s=s, c=c, c1=c1, c2=c2, total=total)
+	return render_template('home.html', title= 'Home', s=s, c=c, c1=c1, c2=c2, total=total, lat=float(get_coordinates()[0:7]), lon=float(get_coordinates()[7:]))
 #!------------------------------------------------------------------------------------------------
 
 @app.route("/about")
@@ -95,7 +101,7 @@ def register():
 	if form.validate_on_submit():
 		
 		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-		user = User(username = form.username.data, email = form.email.data, school = form.school.data, college = form.college.data, company1 = form.company1.data, company2 = form.company2.data, gps = location, password= hashed_password)
+		user = User(username = form.username.data, email = form.email.data, school = form.school.data, college = form.college.data, company1 = form.company1.data, company2 = form.company2.data, gps = get_coordinates(), password= hashed_password)
 		
 		db.session.add(user)
 		db.session.commit()
@@ -158,4 +164,18 @@ def account():
 		form.company1.data = current_user.company1
 		form.company2.data = current_user.company2
 
-	return render_template('account.html', title='Account', form=form)
+	return render_template('account.html', title='Account', form=form, lat=float(get_coordinates()[0:7]), lon=float(get_coordinates()[7:]))
+
+@app.route('/chat')
+def chat():
+    return render_template('chat.html', user=current_user)
+
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!')
+
+
+
+@socketio.on('my event')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    print('received my event: ' + str(json))
+    socketio.emit('my response', json, callback=messageReceived)
