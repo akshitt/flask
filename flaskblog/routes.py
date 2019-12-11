@@ -123,7 +123,7 @@ def login():
 		
 		if user and bcrypt.check_password_hash(user.password, form.password.data):
 			login_user(user,remember = form.remember.data)
-			current_user.gps = location	
+			current_user.gps = get_coordinates()	
 			db.session.commit()
 			flash('Login successful','success')
 			return redirect(url_for('home'))
